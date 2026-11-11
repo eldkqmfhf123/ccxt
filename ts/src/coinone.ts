@@ -491,20 +491,29 @@ export default class coinone extends Exchange {
     }
 
     override parseBalance (response: Dict): Balances {
+        //
+        //     {
+        //         "result": "success",
+        //         "error_code": "0",
+        //         "balances": [
+        //             {
+        //                 "available": "998999692485",
+        //                 "limit": "0",
+        //                 "average_price": "100000000",
+        //                 "currency": "BTC"
+        //             }
+        //         ]
+        //     }
+        //
         const result: Dict = { 'info': response };
-        const balances = this.omit (response, [
-            'errorCode',
-            'result',
-            'normalWallets',
-        ]);
-        const currencyIds = Object.keys (balances);
-        for (let i = 0; i < currencyIds.length; i++) {
-            const currencyId = currencyIds[i];
-            const balance = this.safeDict (balances, currencyId);
+        const balances = this.safeList (response, 'balances', []);
+        for (let i = 0; i < balances.length; i++) {
+            const balance = balances[i];
+            const currencyId = this.safeString (balance, 'currency');
             const code = this.safeCurrencyCode (currencyId);
             const account = this.account ();
-            account['free'] = this.safeString (balance, 'avail');
-            account['total'] = this.safeString (balance, 'balance');
+            account['free'] = this.safeString (balance, 'available');
+            account['used'] = this.safeString (balance, 'limit');
             if (code !== undefined) {
                 result[code] = account;
             }
@@ -524,7 +533,7 @@ export default class coinone extends Exchange {
         if (this.markets === undefined) {
             await this.loadMarkets ();
         }
-        const response = await this.v2PrivatePostAccountBalance (params);
+        const response = await this.v2_1PrivatePostAccountBalanceAll (params);
         return this.parseBalance (response);
     }
 

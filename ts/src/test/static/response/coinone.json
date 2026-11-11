@@ -150,6 +150,93 @@
                     }
                 ]
             }
+        ],
+        "fetchBalance": [
+            {
+                "description": "v2.1 balance/all",
+                "method": "fetchBalance",
+                "input": [],
+                "httpResponse": {
+                    "result": "success",
+                    "error_code": "0",
+                    "balances": [
+                        {
+                            "available": "0.5",
+                            "limit": "0.1",
+                            "average_price": "100000000",
+                            "currency": "BTC"
+                        },
+                        {
+                            "available": "100",
+                            "limit": "0",
+                            "average_price": "3290000",
+                            "currency": "XRP"
+                        },
+                        {
+                            "available": "232706745677",
+                            "limit": "1000000",
+                            "average_price": "0",
+                            "currency": "KRW"
+                        }
+                    ]
+                },
+                "parsedResponse": {
+                    "info": {
+                        "result": "success",
+                        "error_code": "0",
+                        "balances": [
+                            {
+                                "available": "0.5",
+                                "limit": "0.1",
+                                "average_price": "100000000",
+                                "currency": "BTC"
+                            },
+                            {
+                                "available": "100",
+                                "limit": "0",
+                                "average_price": "3290000",
+                                "currency": "XRP"
+                            },
+                            {
+                                "available": "232706745677",
+                                "limit": "1000000",
+                                "average_price": "0",
+                                "currency": "KRW"
+                            }
+                        ]
+                    },
+                    "BTC": {
+                        "free": 0.5,
+                        "used": 0.1,
+                        "total": 0.6
+                    },
+                    "XRP": {
+                        "free": 100,
+                        "used": 0,
+                        "total": 100
+                    },
+                    "KRW": {
+                        "free": 232706745677,
+                        "used": 1000000,
+                        "total": 232707745677
+                    },
+                    "free": {
+                        "BTC": 0.5,
+                        "XRP": 100,
+                        "KRW": 232706745677
+                    },
+                    "used": {
+                        "BTC": 0.1,
+                        "XRP": 0,
+                        "KRW": 1000000
+                    },
+                    "total": {
+                        "BTC": 0.6,
+                        "XRP": 100,
+                        "KRW": 232707745677
+                    }
+                }
+            }
         ]
   }
 }

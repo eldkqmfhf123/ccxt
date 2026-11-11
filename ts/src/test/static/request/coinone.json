@@ -76,6 +76,15 @@
                     "BTC/KRW"
                 ]
             }
+        ],
+        "fetchBalance": [
+            {
+                "description": "fetchBalance",
+                "method": "fetchBalance",
+                "url": "https://api.coinone.co.kr/v2.1/account/balance/all",
+                "input": [],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\"}"
+            }
         ]
     }
 }
