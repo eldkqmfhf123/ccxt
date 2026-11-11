@@ -85,6 +85,87 @@
                 "input": [],
                 "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\"}"
             }
+        ],
+        "createOrder": [
+            {
+                "description": "limit buy",
+                "method": "createOrder",
+                "url": "https://api.coinone.co.kr/v2.1/order/limit",
+                "input": [
+                    "BTC/KRW",
+                    "limit",
+                    "buy",
+                    0.001,
+                    130000000
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"type\":\"LIMIT\",\"side\":\"BUY\",\"price\":\"130000000\",\"qty\":\"0.001\"}"
+            }
+        ],
+        "fetchOrder": [
+            {
+                "description": "fetchOrder by id",
+                "method": "fetchOrder",
+                "url": "https://api.coinone.co.kr/v2.1/order/detail",
+                "input": [
+                    "0f1c26d0-1e4d-11e9-9ec7-00e04c3600d7",
+                    "BTC/KRW"
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"order_id\":\"0f1c26d0-1e4d-11e9-9ec7-00e04c3600d7\"}"
+            },
+            {
+                "description": "fetchOrder by clientOrderId",
+                "method": "fetchOrder",
+                "url": "https://api.coinone.co.kr/v2.1/order/detail",
+                "input": [
+                    "x",
+                    "BTC/KRW",
+                    {
+                        "clientOrderId": "my-order-1"
+                    }
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"user_order_id\":\"my-order-1\"}"
+            }
+        ],
+        "fetchOpenOrders": [
+            {
+                "description": "fetchOpenOrders all markets",
+                "method": "fetchOpenOrders",
+                "url": "https://api.coinone.co.kr/v2.1/order/active_orders",
+                "input": [],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\"}"
+            },
+            {
+                "description": "fetchOpenOrders with symbol",
+                "method": "fetchOpenOrders",
+                "url": "https://api.coinone.co.kr/v2.1/order/active_orders",
+                "input": [
+                    "BTC/KRW"
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\"}"
+            }
+        ],
+        "cancelOrder": [
+            {
+                "description": "cancelOrder",
+                "method": "cancelOrder",
+                "url": "https://api.coinone.co.kr/v2.1/order/cancel",
+                "input": [
+                    "d85cc6af-b131-4398-b269-ddbafa760a39",
+                    "BTC/KRW"
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"order_id\":\"d85cc6af-b131-4398-b269-ddbafa760a39\"}"
+            }
+        ],
+        "cancelAllOrders": [
+            {
+                "description": "cancelAllOrders",
+                "method": "cancelAllOrders",
+                "url": "https://api.coinone.co.kr/v2.1/order/cancel/all",
+                "input": [
+                    "BTC/KRW"
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\"}"
+            }
         ]
     }
 }
