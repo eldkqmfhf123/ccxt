@@ -1344,7 +1344,8 @@ export default class coinone extends Exchange {
                 'nonce': nonce,
             }, params));
             const payload = this.stringToBase64 (json);
-            requestBody = payload;
+            // the server authenticates the X-COINONE-PAYLOAD header, the body carries the same json
+            requestBody = json;
             const secret = this.secret.toUpperCase ();
             const signature = this.hmac (this.encode (payload), this.encode (secret), sha512);
             requestHeaders = {

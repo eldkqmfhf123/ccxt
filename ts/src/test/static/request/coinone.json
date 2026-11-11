@@ -1,6 +1,8 @@
 {
     "exchange": "bitbns",
-    "skipKeys": [],
+    "skipKeys": [
+        "nonce"
+    ],
     "outputType": "json",
     "methods": {
         "fetchCurrencies": [
