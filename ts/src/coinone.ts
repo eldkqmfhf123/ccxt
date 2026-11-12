@@ -6,7 +6,7 @@ import Exchange from './abstract/coinone.js';
 import { BadSymbol, BadRequest, ExchangeError, ArgumentsRequired, OrderNotFound, OnMaintenance } from './base/errors.js';
 import { Precise } from './base/Precise.js';
 import { TICK_SIZE } from './base/functions/number.js';
-import type { Balances, Currencies, CurrencyInterface, DepositAddress, Dict, Int, List, Market, NullableDict, FeeString, Num, Order, OrderBook, OrderSide, OrderType, Str, Strings, Ticker, Tickers, Trade, int, Endpoint } from './base/types.js';
+import type { Balances, Currencies, Currency, CurrencyInterface, DepositAddress, Dict, Int, List, Market, NullableDict, FeeString, Num, Order, OrderBook, OrderSide, OrderType, Str, Strings, Ticker, Tickers, Trade, int, Endpoint } from './base/types.js';
 
 //  ---------------------------------------------------------------------------
 
@@ -1407,6 +1407,7 @@ export default class coinone extends Exchange {
      * @method
      * @name coinone#fetchDepositAddresses
      * @description fetch deposit addresses for multiple currencies and chain types
+     * @see https://docs.coinone.co.kr/reference/virtual-asset-deposit-address
      * @param {string[]|undefined} codes list of unified currency codes, default is undefined
      * @param {object} [params] extra parameters specific to the exchange API endpoint
      * @returns {object} a list of [address structures]{@link https://docs.ccxt.com/?id=address-structure}
@@ -1415,52 +1416,51 @@ export default class coinone extends Exchange {
         if (this.markets === undefined) {
             await this.loadMarkets ();
         }
-        const response = await this.v2PrivatePostAccountDepositAddress (params);
+        const request: Dict = {};
+        if (codes !== undefined) {
+            request['currencies'] = this.currencyIds (codes);
+        }
+        const response = await this.v2_1PrivatePostAccountDepositAddress (this.extend (request, params));
         //
         //     {
         //         "result": "success",
-        //         "errorCode": "0",
-        //         "walletAddress": {
-        //             "matic": null,
-        //             "btc": "mnobqu4i6qMCJWDpf5UimRmr8JCvZ8FLcN",
-        //             "xrp": null,
-        //             "xrp_tag": "-1",
-        //             "kava": null,
-        //             "kava_memo": null,
-        //         }
+        //         "error_code": "0",
+        //         "deposit_addresses": [
+        //             {
+        //                 "currency": "BTC",
+        //                 "address": "btc_address",
+        //                 "secondary_address": null
+        //             },
+        //             {
+        //                 "currency": "XRP",
+        //                 "address": "xrp_address",
+        //                 "secondary_address": "189072"
+        //             }
+        //         ]
         //     }
         //
-        const walletAddress = this.safeDict (response, 'walletAddress', {});
-        const keys = Object.keys (walletAddress);
-        const result: Dict = {};
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            const value = this.safeString (walletAddress, key);
-            if ((value === undefined) || (value === null) || (value === '') || (value === '-1')) {
-                continue;
-            }
-            const parts = key.split ('_');
-            const currencyId = this.safeString (parts, 0);
-            const secondPart = this.safeString (parts, 1);
-            const code = this.safeCurrencyCode (currencyId);
-            const address = this.safeString (this.safeValue (result, code), 'address', value);
-            this.checkAddress (address);
-            const depositAddress: Dict = {
-                'info': address,
-                'currency': code,
-                'network': undefined,
-                'address': address,
-                'tag': this.safeString (this.safeValue (result, code), 'tag'),
-            };
-            if ((secondPart === 'tag' || secondPart === 'memo')) {
-                depositAddress['tag'] = value;
-                depositAddress['info'] = [ address, value ];
-            }
-            if (code !== undefined) {
-                result[code] = depositAddress;
-            }
-        }
-        return this.toArray (result);
+        const depositAddresses = this.safeList (response, 'deposit_addresses', []);
+        return this.parseDepositAddresses (depositAddresses, codes, false);
+    }
+
+    override parseDepositAddress (depositAddress: Dict, currency: Currency = undefined): DepositAddress {
+        //
+        //     {
+        //         "currency": "XRP",
+        //         "address": "xrp_address",
+        //         "secondary_address": "189072"
+        //     }
+        //
+        const currencyId = this.safeString (depositAddress, 'currency');
+        const address = this.safeString (depositAddress, 'address');
+        this.checkAddress (address);
+        return {
+            'info': depositAddress,
+            'currency': this.safeCurrencyCode (currencyId, currency),
+            'network': undefined,
+            'address': address,
+            'tag': this.safeString (depositAddress, 'secondary_address'),
+        } as DepositAddress;
     }
 
     override sign (path: string, api: string[] = [ 'public' ], method: string = 'GET', params: Dict = {}): Dict {

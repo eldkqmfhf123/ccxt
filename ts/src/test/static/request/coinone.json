@@ -211,6 +211,27 @@
                 ],
                 "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"size\":100,\"from_ts\":1761200000000,\"to_ts\":1761400000000,\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"to_trade_id\":\"0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3\"}"
             }
+        ],
+        "fetchDepositAddresses": [
+            {
+                "description": "fetchDepositAddresses all currencies",
+                "method": "fetchDepositAddresses",
+                "url": "https://api.coinone.co.kr/v2.1/account/deposit_address",
+                "input": [],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\"}"
+            },
+            {
+                "description": "fetchDepositAddresses with codes",
+                "method": "fetchDepositAddresses",
+                "url": "https://api.coinone.co.kr/v2.1/account/deposit_address",
+                "input": [
+                    [
+                        "BTC",
+                        "XRP"
+                    ]
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"currencies\":[\"BTC\",\"XRP\"]}"
+            }
         ]
     }
 }

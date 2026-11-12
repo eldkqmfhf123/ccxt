@@ -833,6 +833,69 @@
                     }
                 ]
             }
+        ],
+        "fetchDepositAddresses": [
+            {
+                "description": "v2.1 deposit_address",
+                "method": "fetchDepositAddresses",
+                "input": [],
+                "httpResponse": {
+                    "result": "success",
+                    "error_code": "0",
+                    "deposit_addresses": [
+                        {
+                            "currency": "BTC",
+                            "address": "btc_address",
+                            "secondary_address": null
+                        },
+                        {
+                            "currency": "ETH",
+                            "address": "eth_address",
+                            "secondary_address": "memo1"
+                        },
+                        {
+                            "currency": "XRP",
+                            "address": "xrp_address",
+                            "secondary_address": "189072"
+                        }
+                    ]
+                },
+                "parsedResponse": [
+                    {
+                        "info": {
+                            "currency": "BTC",
+                            "address": "btc_address",
+                            "secondary_address": null
+                        },
+                        "currency": "BTC",
+                        "network": null,
+                        "address": "btc_address",
+                        "tag": null
+                    },
+                    {
+                        "info": {
+                            "currency": "ETH",
+                            "address": "eth_address",
+                            "secondary_address": "memo1"
+                        },
+                        "currency": "ETH",
+                        "network": null,
+                        "address": "eth_address",
+                        "tag": "memo1"
+                    },
+                    {
+                        "info": {
+                            "currency": "XRP",
+                            "address": "xrp_address",
+                            "secondary_address": "189072"
+                        },
+                        "currency": "XRP",
+                        "network": null,
+                        "address": "xrp_address",
+                        "tag": "189072"
+                    }
+                ]
+            }
         ]
   }
 }
