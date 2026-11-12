@@ -701,6 +701,138 @@
                     }
                 ]
             }
+        ],
+        "fetchMyTrades": [
+            {
+                "description": "v2.1 completed_orders",
+                "method": "fetchMyTrades",
+                "input": [
+                    "BTC/KRW",
+                    1761200000000,
+                    50,
+                    {
+                        "until": 1761400000000
+                    }
+                ],
+                "httpResponse": {
+                    "result": "success",
+                    "error_code": "0",
+                    "completed_orders": [
+                        {
+                            "trade_id": "0e2bb80f-1e4d-11e9-9ec7-00e04c3600d1",
+                            "order_id": "0e2b9627-1e4d-11e9-9ec7-00e04c3600d2",
+                            "quote_currency": "KRW",
+                            "target_currency": "BTC",
+                            "order_type": "LIMIT",
+                            "is_ask": true,
+                            "is_maker": true,
+                            "price": "8420",
+                            "qty": "0.1599",
+                            "timestamp": 1761300600000,
+                            "fee_rate": "0.001",
+                            "fee": "162",
+                            "fee_currency": "KRW"
+                        },
+                        {
+                            "trade_id": "0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3",
+                            "order_id": "0e2bb1e3-1e4d-11e9-9ec7-00e04c3600d4",
+                            "quote_currency": "KRW",
+                            "target_currency": "BTC",
+                            "order_type": "LIMIT",
+                            "is_ask": false,
+                            "is_maker": true,
+                            "price": "7951",
+                            "qty": "0.97",
+                            "timestamp": 1761300000000,
+                            "fee_rate": "0.001",
+                            "fee": "159",
+                            "fee_currency": "KRW"
+                        }
+                    ]
+                },
+                "parsedResponse": [
+                    {
+                        "id": "0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3",
+                        "info": {
+                            "trade_id": "0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3",
+                            "order_id": "0e2bb1e3-1e4d-11e9-9ec7-00e04c3600d4",
+                            "quote_currency": "KRW",
+                            "target_currency": "BTC",
+                            "order_type": "LIMIT",
+                            "is_ask": false,
+                            "is_maker": true,
+                            "price": "7951",
+                            "qty": "0.97",
+                            "timestamp": 1761300000000,
+                            "fee_rate": "0.001",
+                            "fee": "159",
+                            "fee_currency": "KRW"
+                        },
+                        "timestamp": 1761300000000,
+                        "datetime": "2025-10-24T10:00:00.000Z",
+                        "order": "0e2bb1e3-1e4d-11e9-9ec7-00e04c3600d4",
+                        "symbol": "BTC/KRW",
+                        "type": "limit",
+                        "side": "buy",
+                        "takerOrMaker": "maker",
+                        "price": 7951,
+                        "amount": 0.97,
+                        "cost": 7712.47,
+                        "fee": {
+                            "currency": "KRW",
+                            "cost": 159,
+                            "rate": 0.001
+                        },
+                        "fees": [
+                            {
+                                "currency": "KRW",
+                                "cost": 159,
+                                "rate": 0.001
+                            }
+                        ]
+                    },
+                    {
+                        "id": "0e2bb80f-1e4d-11e9-9ec7-00e04c3600d1",
+                        "info": {
+                            "trade_id": "0e2bb80f-1e4d-11e9-9ec7-00e04c3600d1",
+                            "order_id": "0e2b9627-1e4d-11e9-9ec7-00e04c3600d2",
+                            "quote_currency": "KRW",
+                            "target_currency": "BTC",
+                            "order_type": "LIMIT",
+                            "is_ask": true,
+                            "is_maker": true,
+                            "price": "8420",
+                            "qty": "0.1599",
+                            "timestamp": 1761300600000,
+                            "fee_rate": "0.001",
+                            "fee": "162",
+                            "fee_currency": "KRW"
+                        },
+                        "timestamp": 1761300600000,
+                        "datetime": "2025-10-24T10:10:00.000Z",
+                        "order": "0e2b9627-1e4d-11e9-9ec7-00e04c3600d2",
+                        "symbol": "BTC/KRW",
+                        "type": "limit",
+                        "side": "sell",
+                        "takerOrMaker": "maker",
+                        "price": 8420,
+                        "amount": 0.1599,
+                        "cost": 1346.358,
+                        "fee": {
+                            "currency": "KRW",
+                            "cost": 162,
+                            "rate": 0.001
+                        },
+                        "fees": [
+                            {
+                                "currency": "KRW",
+                                "cost": 162,
+                                "rate": 0.001
+                            }
+                        ]
+                    }
+                ]
+            }
         ]
   }
 }

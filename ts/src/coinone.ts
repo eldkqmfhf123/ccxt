@@ -267,10 +267,10 @@ export default class coinone extends Exchange {
                     'createOrders': undefined,
                     'fetchMyTrades': {
                         'marginMode': false,
-                        'limit': 100, // todo implement
+                        'limit': 100,
                         'daysBack': 100000, // todo implement
-                        'untilDays': 100000, // todo implement
-                        'symbolRequired': true,
+                        'untilDays': 90,
+                        'symbolRequired': false,
                     },
                     'fetchOrder': {
                         'marginMode': false,
@@ -789,55 +789,69 @@ export default class coinone extends Exchange {
         // fetchMyTrades (private)
         //
         //     {
-        //         "timestamp": "1416561032",
-        //         "price": "419000.0",
-        //         "type": "bid",
-        //         "qty": "0.001",
-        //         "feeRate": "-0.0015",
-        //         "fee": "-0.0000015",
-        //         "orderId": "E84A1AC2-8088-4FA0-B093-A3BCDB9B3C85"
+        //         "trade_id": "0e2bb80f-1e4d-11e9-9ec7-00e04c3600d1",
+        //         "order_id": "0e2b9627-1e4d-11e9-9ec7-00e04c3600d2",
+        //         "quote_currency": "KRW",
+        //         "target_currency": "BTC",
+        //         "order_type": "LIMIT",
+        //         "is_ask": true,
+        //         "is_maker": true,
+        //         "price": "8420",
+        //         "qty": "0.1599",
+        //         "timestamp": 1761300000000,
+        //         "fee_rate": "0.001",
+        //         "fee": "162",
+        //         "fee_currency": "KRW"
         //     }
         //
         const timestamp = this.safeInteger (trade, 'timestamp');
-        const marketResolved: Market = this.safeMarket (undefined, market);
-        const isSellerMaker = this.safeBool (trade, 'is_seller_maker');
+        const base = this.safeCurrencyCode (this.safeString (trade, 'target_currency'));
+        const quote = this.safeCurrencyCode (this.safeString (trade, 'quote_currency'));
+        let symbol: Str = undefined;
+        if ((base !== undefined) && (quote !== undefined)) {
+            symbol = base + '/' + quote;
+        }
+        const marketResolved: Market = (symbol !== undefined) ? this.safeMarket (symbol, market, '/') : this.safeMarket (undefined, market);
         let side: Str = undefined;
+        const isSellerMaker = this.safeBool (trade, 'is_seller_maker');
+        const isAsk = this.safeBool (trade, 'is_ask');
         if (isSellerMaker !== undefined) {
             side = isSellerMaker ? 'sell' : 'buy';
+        } else if (isAsk !== undefined) {
+            side = isAsk ? 'sell' : 'buy';
         }
-        const priceString = this.safeString (trade, 'price');
-        const amountString = this.safeString (trade, 'qty');
-        const orderId = this.safeString (trade, 'orderId');
-        let feeCostString = this.safeString (trade, 'fee');
+        let takerOrMaker: Str = undefined;
+        const isMaker = this.safeBool (trade, 'is_maker');
+        if (isMaker !== undefined) {
+            takerOrMaker = isMaker ? 'maker' : 'taker';
+        }
+        const orderType = this.safeString (trade, 'order_type');
+        const types: Dict = {
+            'LIMIT': 'limit',
+            'STOP_LIMIT': 'limit',
+            'MARKET': 'market',
+        };
+        const feeCostString = this.safeString (trade, 'fee');
         let fee: FeeString = undefined;
         if (feeCostString !== undefined) {
-            feeCostString = Precise.stringAbs (feeCostString);
-            let feeRateString = this.safeString (trade, 'feeRate');
-            feeRateString = Precise.stringAbs (feeRateString);
-            let feeCurrencyCode: Str = undefined;
-            if (side === 'sell') {
-                feeCurrencyCode = marketResolved['quote'];
-            } else {
-                feeCurrencyCode = marketResolved['base'];
-            }
             fee = {
                 'cost': feeCostString,
-                'currency': feeCurrencyCode,
-                'rate': feeRateString,
+                'currency': this.safeCurrencyCode (this.safeString (trade, 'fee_currency')),
+                'rate': this.safeString (trade, 'fee_rate'),
             };
         }
         return this.safeTrade ({
-            'id': this.safeString (trade, 'id'),
+            'id': this.safeString2 (trade, 'trade_id', 'id'),
             'info': trade,
             'timestamp': timestamp,
             'datetime': this.iso8601 (timestamp),
-            'order': orderId,
+            'order': this.safeString (trade, 'order_id'),
             'symbol': marketResolved['symbol'],
-            'type': undefined,
+            'type': this.safeString (types, orderType),
             'side': side,
-            'takerOrMaker': undefined,
-            'price': priceString,
-            'amount': amountString,
+            'takerOrMaker': takerOrMaker,
+            'price': this.safeString (trade, 'price'),
+            'amount': this.safeString (trade, 'qty'),
             'cost': undefined,
             'fee': fee,
         }, marketResolved);
@@ -1226,46 +1240,77 @@ export default class coinone extends Exchange {
      * @method
      * @name coinone#fetchMyTrades
      * @description fetch all trades made by the user
-     * @param {string} symbol unified market symbol
+     * @see https://docs.coinone.co.kr/reference/find-completed-orders
+     * @see https://docs.coinone.co.kr/reference/find-all-completed-orders
+     * @param {string} [symbol] unified market symbol, trades of all markets are returned if not set
      * @param {int} [since] the earliest time in ms to fetch trades for
-     * @param {int} [limit] the maximum number of trades structures to retrieve
+     * @param {int} [limit] the maximum number of trades structures to retrieve, max 100
      * @param {object} [params] extra parameters specific to the exchange API endpoint
+     * @param {int} [params.until] the latest time in ms to fetch trades for, the range between since and until can be 90 days at most
+     * @param {string} [params.to_trade_id] fetch the trades before this trade id
      * @returns {Trade[]} a list of [trade structures]{@link https://docs.ccxt.com/?id=trade-structure}
      */
     override async fetchMyTrades (symbol: Str = undefined, since: Int = undefined, limit: Int = undefined, params: Dict = {}): Promise<Trade[]> {
-        if (symbol === undefined) {
-            throw new ArgumentsRequired (this.id + ' fetchMyTrades() requires a symbol argument');
-        }
         if (this.markets === undefined) {
             await this.loadMarkets ();
         }
-        const market = this.market (symbol);
+        const maxRange = 90 * 24 * 60 * 60 * 1000;
+        let until = this.safeInteger (params, 'until');
+        if (until === undefined) {
+            until = this.milliseconds ();
+            if (since !== undefined) {
+                until = Math.min (this.sum (since, maxRange), until);
+            }
+        }
+        let fromTs = since;
+        if (fromTs === undefined) {
+            fromTs = until - maxRange;
+        }
+        let size = 100;
+        if (limit !== undefined) {
+            size = Math.min (limit, 100);
+        }
         const request: Dict = {
-            'currency': market['id'],
+            'size': size,
+            'from_ts': fromTs,
+            'to_ts': until,
         };
-        const response = await this.v2PrivatePostOrderCompleteOrders (this.extend (request, params));
-        //
-        // despite the name of the endpoint it returns trades which may have a duplicate orderId
-        // https://github.com/ccxt/ccxt/pull/7067
+        const query = this.omit (params, 'until');
+        let market: Market = undefined;
+        let response = undefined;
+        if (symbol !== undefined) {
+            market = this.market (symbol);
+            request['quote_currency'] = market['quoteId'];
+            request['target_currency'] = market['baseId'];
+            response = await this.v2_1PrivatePostOrderCompletedOrders (this.extend (request, query));
+        } else {
+            response = await this.v2_1PrivatePostOrderCompletedOrdersAll (this.extend (request, query));
+        }
         //
         //     {
         //         "result": "success",
-        //         "errorCode": "0",
-        //         "completeOrders": [
+        //         "error_code": "0",
+        //         "completed_orders": [
         //             {
-        //                 "timestamp": "1416561032",
-        //                 "price": "419000.0",
-        //                 "type": "bid",
-        //                 "qty": "0.001",
-        //                 "feeRate": "-0.0015",
-        //                 "fee": "-0.0000015",
-        //                 "orderId": "E84A1AC2-8088-4FA0-B093-A3BCDB9B3C85"
+        //                 "trade_id": "0e2bb80f-1e4d-11e9-9ec7-00e04c3600d1",
+        //                 "order_id": "0e2b9627-1e4d-11e9-9ec7-00e04c3600d2",
+        //                 "quote_currency": "KRW",
+        //                 "target_currency": "BTC",
+        //                 "order_type": "LIMIT",
+        //                 "is_ask": true,
+        //                 "is_maker": true,
+        //                 "price": "8420",
+        //                 "qty": "0.1599",
+        //                 "timestamp": 1761300000000,
+        //                 "fee_rate": "0.001",
+        //                 "fee": "162",
+        //                 "fee_currency": "KRW"
         //             }
         //         ]
         //     }
         //
-        const completeOrders: Dict[] = this.safeList (response, 'completeOrders', []);
-        return this.parseTrades (completeOrders, market, since, limit);
+        const completedOrders = this.safeList (response, 'completed_orders', []);
+        return this.parseTrades (completedOrders, market, since, limit);
     }
 
     /**

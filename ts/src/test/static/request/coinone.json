@@ -166,6 +166,51 @@
                 ],
                 "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\"}"
             }
+        ],
+        "fetchMyTrades": [
+            {
+                "description": "fetchMyTrades with symbol, since, limit and until",
+                "method": "fetchMyTrades",
+                "url": "https://api.coinone.co.kr/v2.1/order/completed_orders",
+                "input": [
+                    "BTC/KRW",
+                    1761200000000,
+                    50,
+                    {
+                        "until": 1761400000000
+                    }
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"size\":50,\"from_ts\":1761200000000,\"to_ts\":1761400000000,\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\"}"
+            },
+            {
+                "description": "fetchMyTrades all markets",
+                "method": "fetchMyTrades",
+                "url": "https://api.coinone.co.kr/v2.1/order/completed_orders/all",
+                "input": [
+                    null,
+                    1761200000000,
+                    null,
+                    {
+                        "until": 1761400000000
+                    }
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"size\":100,\"from_ts\":1761200000000,\"to_ts\":1761400000000}"
+            },
+            {
+                "description": "fetchMyTrades with to_trade_id",
+                "method": "fetchMyTrades",
+                "url": "https://api.coinone.co.kr/v2.1/order/completed_orders",
+                "input": [
+                    "BTC/KRW",
+                    1761200000000,
+                    100,
+                    {
+                        "until": 1761400000000,
+                        "to_trade_id": "0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3"
+                    }
+                ],
+                "output": "{\"access_token\":\"key\",\"nonce\":\"a8b34a4c-5f6d-4e32-9b6b-0b1f5f3c2d11\",\"size\":100,\"from_ts\":1761200000000,\"to_ts\":1761400000000,\"quote_currency\":\"KRW\",\"target_currency\":\"BTC\",\"to_trade_id\":\"0e2b9fb0-1e4d-11e9-9ec7-00e04c3600d3\"}"
+            }
         ]
     }
 }
